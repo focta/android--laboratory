@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name">AndroidLaboratory</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="tv_thx_title">注文完了</string>
-    <string name="tv_thx_desc">以下のメニューのご注文を受け付けました。\nご注文ありがとうございます。</string>
+    <string name="tv_todo_top">TODOリストアプリ</string>
+    <string name="tv_menu_title">本日のTODO</string>
     <string name="bt_thx_back">リストに戻る</string>
+    <string name="bt_register">登録</string>
 </resources>

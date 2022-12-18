@@ -15,7 +15,7 @@ class MenuThanksFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        val view = inflater.inflate(R.layout.fragment_menu_thanks, container, false)
+        val view = inflater.inflate(R.layout.fragment_todo_top, container, false)
 
         val intent = activity?.intent
         val extras = intent?.extras
@@ -23,10 +23,10 @@ class MenuThanksFragment : Fragment() {
         val menuName = extras?.getString("menuName")
         val menuPrice = extras?.getString("menuPrice")
 
-        val tvMenuName: TextView = view.findViewById(R.id.tvMenuName)
-        val tvMenuPrice: TextView = view.findViewById(R.id.tvMenuPrice)
-        tvMenuName.text = menuName
-        tvMenuPrice.text = menuPrice
+//        val tvMenuName: TextView = view.findViewById(R.id.tvMenuName)
+//        val tvMenuPrice: TextView = view.findViewById(R.id.tvMenuPrice)
+//        tvMenuName.text = menuName
+//        tvMenuPrice.text = menuPrice
 
         val btBackButton: Button = view.findViewById(R.id.btBackButton)
         btBackButton.setOnClickListener(ButtonClickListner())
