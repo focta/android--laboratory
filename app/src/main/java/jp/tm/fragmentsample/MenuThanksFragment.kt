@@ -1,17 +1,20 @@
 package jp.tm.fragmentsample
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ListView
-import android.widget.SimpleAdapter
 import androidx.fragment.app.Fragment
+import androidx.room.Room
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class MenuThanksFragment : Fragment() {
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -20,38 +23,46 @@ class MenuThanksFragment : Fragment() {
 
         val view = inflater.inflate(R.layout.fragment_todo_top, container, false)
 
-//        val intent = activity?.intent
-//        val extras = intent?.extras
-
-//        val menuName = extras?.getString("menuName")
-//        val menuPrice = extras?.getString("menuPrice")
-
-//        val tvMenuName: TextView = view.findViewById(R.id.tvMenuName)
-//        val tvMenuPrice: TextView = view.findViewById(R.id.tvMenuPrice)
-//        tvMenuName.text = menuName
-//        tvMenuPrice.text = menuPrice
+        // ListViewの初期設定
+        val lvTodoList: ListView = view.findViewById(R.id.lvTodoList)
+        // acvtivityがnullの場合もあるため、letで動作させる
+        val adapter = activity?.let {
+            ArrayAdapter<Any>(
+                it,
+                android.R.layout.simple_list_item_1,
+                mutableListOf()
+            )
+        }
+        lvTodoList.adapter = adapter
 
         // 登録ボタンのクリックリスナーの設定
         val todoRegisterButton: Button = view.findViewById(R.id.btTodoRegisterButton)
-        todoRegisterButton.setOnClickListener{
+        todoRegisterButton.setOnClickListener {
             // 入力テキストをひろう処理
             val editTodoInputText: EditText = view.findViewById(R.id.etTodoInput)
             val text: String = editTodoInputText.text.toString()
-            println("入力したテキスト: $text")
-            // TODO リストへの入力値の適用
+            // リストへの入力値の適用
+            adapter?.add(text)
+            // ここでDBの追加処理
+            // DBの追加処理を書きたいが、コルーチンを使ってメインスレッドから切り離さないと行けない
+            activity?.let {
+                val database =
+                    Room.databaseBuilder(
+                        it.applicationContext,
+                        TodoRoomDatabase::class.java,
+                        "database-name"
+                    )
+                        .build()
+                val todoDao = database.todoDao()
+                val todo = Todo(0, text, "", false)
 
-
-            val lvTodoList: ListView = view.findViewById(R.id.lvTodoList)
-            val menuList = menuListOf()
-            // SimpleAdapter第4引数from用データの用意。
-            val from = arrayOf("name", "detail")
-            // SimpleAdapter第5引数to用データの用意。
-            val to = intArrayOf(android.R.id.text1, android.R.id.text2)
-            // SimpleAdapterを生成。
-            val adapter =
-                SimpleAdapter(activity, menuList, android.R.layout.simple_list_item_2, from, to)
-            lvTodoList.adapter = adapter
-
+                // launch は昔の記法で、 0.26以降のバージョンではGlobalScope.launchの気泡となっている
+                // TODO launchだけで十分かを調査する
+                GlobalScope.launch {
+                    todoDao.insert(todo)
+                    Log.v("TAG", "after insert ${todoDao.getAll()}")
+                }
+            }
         }
 
         val btBackButton: Button = view.findViewById(R.id.btBackButton)
@@ -59,7 +70,6 @@ class MenuThanksFragment : Fragment() {
 
         return view
     }
-
 
     private inner class ButtonClickListner : View.OnClickListener {
         override fun onClick(p0: View?) {
@@ -73,5 +83,5 @@ class MenuThanksFragment : Fragment() {
         menuList.add(menu)
         return menuList
     }
-
 }
+
