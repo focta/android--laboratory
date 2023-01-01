@@ -7,6 +7,7 @@ plugins {
 // 拡張プロパティ、このように設定することでGradle上でグローバルに利用できる変数を設定できる
 ext {
     room_version = "2.4.3"
+    lifecycle_version = "2.5.1"
 }
 
 android {
@@ -54,4 +55,7 @@ dependencies {
     implementation "androidx.room:room-runtime:$room_version"
     implementation "androidx.room:room-ktx:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
+
+    // roomでcorutineが必要になるので、lifecycleの導入を行う
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
 }
